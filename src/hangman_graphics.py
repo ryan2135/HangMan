@@ -1,4 +1,14 @@
-"""Graphical Hangman interface using the shared student logic functions."""
+"""Graphical Hangman interface using the shared student logic functions.
+
+STUDENT READING GUIDE
+---------------------
+This file is supplied. You do not need to understand Pygame to complete
+Hangman. If you are curious, follow the sections below to see how your
+14 functions connect to a graphical application.
+
+The game logic lives in hangman_logic.py; this file only displays the game,
+collects player input, and calls those functions.
+"""
 
 import pygame
 
@@ -19,25 +29,24 @@ from hangman_logic import (
     new_round,
 )
 
+# 1. APPEARANCE: Screen dimensions and RGB color constants.
+# Colors are (red, green, blue), with each component from 0 to 255.
 WIDTH, HEIGHT = 1000, 700
-MAX_MISSES = 6
-WORDS_FILE = "words.txt"
-SCORES_FILE = "scores.txt"
-
-NAVY = (22, 45, 80)
-BLUE = (39, 94, 159)
-PALE = (230, 242, 249)
+NAVY = (25, 42, 65)
+BLUE = (47, 87, 133)
+PALE = (235, 245, 249)
 WHITE = (255, 255, 255)
-GREEN = (55, 164, 94)
-RED = (207, 72, 75)
-INK = (28, 48, 76)
-GOLD = (244, 192, 94)
-GRAY = (202, 213, 222)
+GREEN = (39, 145, 111)
+RED = (197, 76, 85)
+INK = (34, 53, 73)
+GOLD = (250, 201, 110)
+GRAY = (198, 211, 218)
 
 
 # ============================================================
-# SUPPLIED GRAPHICS AND GAME CONTROL
-# Do not modify the functions below.
+# 2. DRAWING HELPERS
+# Pygame draws shapes and text on a Surface (the game window).
+# These functions are supplied; students do not need to modify them.
 # ============================================================
 
 
@@ -96,36 +105,38 @@ def draw_background(surface: pygame.Surface) -> None:
     Returns:
         None.
     """
-    surface.fill((169, 218, 243))
-    pygame.draw.circle(surface, (253, 225, 148), (850, 160), 58)
+    surface.fill((186, 225, 241))
+    pygame.draw.circle(surface, GOLD, (852, 177), 65)
     pygame.draw.polygon(
-        surface, (123, 174, 194), [(0, 405), (190, 190), (400, 405)]
+        surface, (132, 173, 193), [(0, 405), (190, 190), (400, 405)]
     )
     pygame.draw.polygon(
-        surface, (105, 156, 186), [(230, 405), (505, 175), (790, 405)]
+        surface, (104, 148, 176), [(230, 405), (505, 175), (790, 405)]
     )
     pygame.draw.polygon(
-        surface, (131, 184, 185), [(570, 405), (800, 230), (1000, 405)]
+        surface, (147, 186, 184), [(570, 405), (800, 230), (1000, 405)]
     )
-    pygame.draw.rect(surface, (119, 185, 121), (0, 410, WIDTH, HEIGHT - 410))
+    pygame.draw.rect(surface, (125, 175, 144), (0, 410, WIDTH, HEIGHT - 410))
     for x, y, s in [
         (25, 420, 1.0),
         (115, 470, 0.8),
         (900, 430, 1.1),
         (960, 510, 0.8),
     ]:
-        pygame.draw.rect(surface, (94, 99, 69), (x - 6, y - 10, 12, 75))
+        pygame.draw.rect(surface, (96, 108, 86), (x - 6, y - 10, 12, 75))
         for level in range(3):
             cy = y - 30 - level * 27
             pygame.draw.polygon(
                 surface,
-                (38, 116, 91),
+                (43, 110, 91),
                 [(x, cy - 70), (x - 40 * s, cy + 20), (x + 40 * s, cy + 20)],
             )
-    rounded(surface, BLUE, pygame.Rect(0, 0, WIDTH, 100), 0)
-    draw_text(surface, "HANGMAN", 46, WHITE, (WIDTH // 2, 49), True)
+    rounded(surface, NAVY, pygame.Rect(0, 0, WIDTH, 100), 0)
+    draw_text(surface, "H A N G M A N", 43, WHITE, (WIDTH // 2, 48), True)
 
 
+# Each incorrect guess adds one body part; the miss count comes from
+# the student's count_misses() function.
 def draw_gallows(surface: pygame.Surface, misses: int) -> None:
     """Draw the gallows and body parts for the miss count.
 
@@ -156,6 +167,8 @@ def draw_gallows(surface: pygame.Surface, misses: int) -> None:
         pygame.draw.line(surface, figure, (290, 352), (329, 401), 5)
 
 
+# 3. INPUT CONTROLS: Build the on-screen alphabet and draw buttons.
+# A pygame.Rect stores a button's position and size for mouse clicks.
 def letter_buttons() -> dict[str, pygame.Rect]:
     """Create clickable rectangles for alphabet letters.
 
@@ -195,8 +208,8 @@ def draw_button(
     Returns:
         None.
     """
-    rounded(surface, (65, 92, 118), rect.move(0, 4), 10)
-    rounded(surface, color, rect, 10)
+    rounded(surface, (69, 92, 108), rect.move(0, 3), 11)
+    rounded(surface, color, rect, 11)
     draw_text(
         surface,
         label,
@@ -207,6 +220,8 @@ def draw_button(
     )
 
 
+# 4. GAME DISPLAY: Turn the student's game-state dictionary into a screen.
+# Notice the calls to count_misses(), show_word(), and is_correct().
 def draw_game(
     surface: pygame.Surface,
     game: dict,
@@ -231,7 +246,8 @@ def draw_game(
     if misses is None:
         misses = 0
     draw_gallows(surface, misses)
-    rounded(surface, (243, 249, 251), pygame.Rect(420, 145, 530, 185), 22)
+    rounded(surface, (91, 128, 142), pygame.Rect(423, 151, 530, 185), 22)
+    rounded(surface, WHITE, pygame.Rect(420, 145, 530, 185), 22)
     word_display = show_word(game["word"], game["guesses"])
     if word_display is None:
         word_display = "_ " * len(game["word"])
@@ -252,6 +268,7 @@ def draw_game(
         (685, 348),
         True,
     )
+    rounded(surface, PALE, pygame.Rect(432, 365, 510, 50), 15)
     draw_text(surface, game["message"], 20, INK, (685, 391), True)
     for letter, rect in buttons.items():
         color = WHITE
@@ -264,12 +281,13 @@ def draw_game(
         draw_button(surface, letter, rect, color)
     for label, rect in actions.items():
         draw_button(surface, label, rect, BLUE, 21)
+    rounded(surface, WHITE, pygame.Rect(18, 603, 395, 65), 15)
     draw_text(
         surface,
         f"Wins: {scores['wins']}   Losses: {scores['losses']}   Points: {scores['points']}",
         18,
         NAVY,
-        (225, 637),
+        (215, 637),
         True,
     )
     draw_text(
@@ -277,6 +295,8 @@ def draw_game(
     )
 
 
+# 5. GAME SETTINGS: The player chooses a category and difficulty.
+# The student functions filter the words before Play is enabled.
 def choose_settings(
     screen: pygame.Surface,
     categories: dict[str, list[str]],
@@ -301,6 +321,7 @@ def choose_settings(
     clock = pygame.time.Clock()
     while True:
         draw_background(screen)
+        rounded(screen, (91, 128, 142), pygame.Rect(200, 131, 610, 500), 20)
         rounded(screen, WHITE, pygame.Rect(195, 125, 610, 500), 20)
         draw_text(screen, "Choose your game", 32, NAVY, (500, 175), True)
         draw_text(screen, "Category", 24, INK, (500, 220), True)
@@ -361,6 +382,9 @@ def choose_settings(
         clock.tick(30)
 
 
+# 6. GAME LOOP: Initialize the window, listen for input, and redraw.
+# This is where the two layers meet: Pygame handles the interface,
+# while the 14 student functions handle the rules and saved scores.
 def main() -> None:
     """Run the provided game window and dispatch student logic.
 
@@ -425,6 +449,8 @@ def main() -> None:
                 for candidate in buttons:
                     if buttons[candidate].collidepoint(event.pos):
                         letter = candidate
+            # Pass the player's letter to student logic, then check for
+            # a win or loss and save updated scores if the round ends.
             if not game["finished"] and letter != "":
                 added = record_guess(game["guesses"], letter)
                 if added:
@@ -451,6 +477,7 @@ def main() -> None:
                         game["message"] = "Nice guess!"
                     else:
                         game["message"] = "Try another letter."
+        # Refresh the display every frame; the game state stays in game.
         draw_game(screen, game, scores, buttons, actions)
         pygame.display.flip()
         clock.tick(30)
