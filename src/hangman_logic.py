@@ -23,19 +23,21 @@ def is_correct(sWord: str, sLetter: str) -> bool:
 
 # 2. record_guess
 def record_guess(lGuesses: list[str], sLetter: str) -> bool:
-    """Add a valid, previously unguessed letter.
+    """Add a valid, previously unguessed letter to the list.
 
     Args:
-        lGuesses (list[str]): letters already guessed
-        sLetter (str): the proposed uppercase letter
+        lGuesses (list[str]): List of previously guessed uppercase letters.
+            Modified only when a valid, new letter is added.
+        sLetter (str): A proposed single uppercase letter (A-Z).
 
     Returns:
         True if the letter was added; otherwise False.
     """
+
     bAdded: bool = False
 
-    if len(sLetter) == 1 and sLetter >= "A" and sLetter <= "Z":
-        if sLetter not in lGuesses:
+    if (len(sLetter) == 1 and sLetter >= "A" and sLetter <= "Z"
+        and sLetter not in lGuesses):
             lGuesses.append(sLetter)
             bAdded = True
 
@@ -47,13 +49,16 @@ def show_word(sWord: str, lGuesses: list[str]) -> str:
     """Construct the word display using letters and underscores.
 
     Args:
-        sWord (str): the uppercase secret word
-        lGuesses (list[str]): letters already guessed
+        sWord (str): The uppercase secret word.
+        lGuesses (list[str]): Previously guessed uppercase letters.
+            This list is not modified.
 
     Returns:
-        The revealed word with spaces between positions.
+        A string containing revealed letters and underscores for
+        unguessed letters, separated by spaces.
         For PYTHON with P and T guessed, return 'P _ T _ _ _'.
     """
+
     sDisplay: str = ""
 
     for iIndex in range(len(sWord)):
@@ -70,15 +75,17 @@ def show_word(sWord: str, lGuesses: list[str]) -> str:
 
 # 4. count_misses
 def count_misses(sWord: str, lGuesses: list[str]) -> int:
-    """Count guessed letters that do not occur in the word.
+    """Count guessed letters that do not occur in the secret word.
 
     Args:
-        sWord (str): the uppercase secret word
-        lGuesses (list[str]): letters already guessed
+        sWord (str): The uppercase secret word.
+        lGuesses (list[str]): Previously guessed uppercase letters.
+            This list is not modified.
 
     Returns:
-        The number of incorrect guesses.
+        The number of incorrect guesses in lGuesses.
     """
+
     iMisses: int = 0
 
     for sLetter in lGuesses:
@@ -90,15 +97,18 @@ def count_misses(sWord: str, lGuesses: list[str]) -> int:
 
 # 5. is_won
 def is_won(sWord: str, lGuesses: list[str]) -> bool:
-    """Check whether every letter in the word has been guessed.
+    """Determine whether every letter in the secret word has been guessed.
 
     Args:
-        sWord (str): the uppercase secret word
-        lGuesses (list[str]): letters already guessed
+        sWord (str): The uppercase secret word.
+        lGuesses (list[str]): Previously guessed uppercase letters.
+            This list is not modified.
 
     Returns:
-        True if all letters have been guessed; otherwise False.
+        True if every letter in sWord appears in lGuesses;
+        otherwise False.
     """
+
     bWon: bool = True
 
     for sLetter in sWord:
@@ -110,15 +120,18 @@ def is_won(sWord: str, lGuesses: list[str]) -> bool:
 
 # 6. is_lost
 def is_lost(sWord: str, lGuesses: list[str]) -> bool:
-    """Check whether the player has reached the miss limit.
+    """Determine whether the player has lost the round.
 
     Args:
-        sWord (str): the uppercase secret word
-        lGuesses (list[str]): letters already guessed
+        sWord (str): The uppercase secret word.
+        lGuesses (list[str]): Previously guessed uppercase letters.
+            This list is not modified.
 
     Returns:
-        True when incorrect guesses reach MAX_MISSES; otherwise False.
+        True if the number of incorrect guesses is greater than
+        or equal to MAX_MISSES; otherwise False.
     """
+
     return count_misses(sWord, lGuesses) >= MAX_MISSES
 
 
@@ -127,14 +140,16 @@ def calculate_score(sWord: str, iMisses: int, sDifficulty: str) -> int:
     """Calculate points earned for winning a round.
 
     Args:
-        sWord (str): the correctly guessed secret word
-        iMisses (int): the number of incorrect guesses
-        sDifficulty (str): EASY, MEDIUM, or HARD
+        sWord (str): The correctly guessed uppercase secret word.
+        iMisses (int): Number of incorrect guesses, from 0 to MAX_MISSES.
+        sDifficulty (str): The difficulty level: EASY, MEDIUM, or HARD.
 
     Returns:
-        Ten points per letter plus five per remaining allowed miss,
-        multiplied by 1 for EASY, 2 for MEDIUM, or 3 for HARD.
+        The score calculated as ten points per letter plus five
+        points per remaining allowed miss, multiplied by the
+        difficulty multiplier (1 for EASY, 2 for MEDIUM, 3 for HARD).
     """
+
     iMultiplier: int = 1
 
     if sDifficulty == "MEDIUM":
@@ -156,47 +171,55 @@ def choose_word(lWords: list[str]) -> str:
     Returns:
         One randomly chosen word.
     """
+
     return random.choice(lWords)
 
 
 # 9. get_words_by_difficulty
 def get_words_by_difficulty(lWords: list[str], sDifficulty: str) -> list[str]:
-    """Select words of the appropriate length.
+    """Select words of the appropriate length for a difficulty level.
 
     Args:
-        lWords (list[str]): words from one category
-        sDifficulty (str): EASY, MEDIUM, or HARD
+        lWords (list[str]): Uppercase words from one category.
+            This list is not modified.
+        sDifficulty (str): The difficulty level: EASY, MEDIUM, or HARD.
 
     Returns:
-        A list of words with 4-5 letters for EASY, 6-7 for MEDIUM,
-        or 8-10 for HARD.
+        A new list containing words with 4-5 letters for EASY,
+        6-7 for MEDIUM, or 8-10 for HARD.
+        Returns an empty list if no words match.
     """
+
     lSelected: list[str] = []
 
     for sWord in lWords:
         iLength: int = len(sWord)
 
-        if sDifficulty == "EASY" and iLength >= 4 and iLength <= 5:
-            lSelected.append(sWord)
-        elif sDifficulty == "MEDIUM" and iLength >= 6 and iLength <= 7:
-            lSelected.append(sWord)
-        elif sDifficulty == "HARD" and iLength >= 8 and iLength <= 10:
+        if ((sDifficulty == "EASY" and iLength >= 4 and iLength <= 5) or
+            (sDifficulty == "MEDIUM" and iLength >= 6 and iLength <= 7) or
+            (sDifficulty == "HARD" and iLength >= 8 and iLength <= 10)):
             lSelected.append(sWord)
 
     return lSelected
 
 
 # 10. select_category
-def select_category(dCategories: dict[str, list[str]], sCategory: str) -> list[str]:
-    """Find the words belonging to a category.
+def select_category(
+        dCategories: dict[str, list[str]], sCategory: str
+    ) -> list[str]:
+    """Find the words belonging to a selected category.
 
     Args:
-        dCategories (dict[str, list[str]]): category names and word lists
-        sCategory (str): the selected category
+        dCategories (dict[str, list[str]]): A dictionary mapping
+            uppercase category names to lists of uppercase words.
+        sCategory (str): The uppercase category name to find.
 
     Returns:
-        The category's words, or an empty list if it does not exist.
+        The list of words belonging to the selected category,
+        or an empty list if the category does not exist.
+        The returned list is not a copy.
     """
+
     lWords: list[str] = []
 
     if sCategory in dCategories:
@@ -209,13 +232,16 @@ def select_category(dCategories: dict[str, list[str]], sCategory: str) -> list[s
 def load_categories() -> dict[str, list[str]]:
     """Load words organized by category from words.txt.
 
-    Args:
-        None
-
     Returns:
-        A dictionary mapping categories to word lists.
-        Each input line has the format CATEGORY,WORD.
+        A dictionary mapping uppercase category names to lists
+        of uppercase words. Each line in the file contains a
+        category and word separated by a comma (CATEGORY,WORD).
+        The input file is guaranteed to be correctly formatted.
+
+    Raises:
+        FileNotFoundError: If words.txt cannot be found.
     """
+
     dCategories: dict[str, list[str]] = {}
 
     with open(WORDS_FILE, "r", encoding="utf-8") as oFile:
@@ -237,16 +263,15 @@ def load_categories() -> dict[str, list[str]]:
 
 # 12. load_scores
 def load_scores() -> dict[str, int]:
-    """Read the saved cumulative scores.
-
-    Args:
-        None
+    """Read cumulative scores from scores.txt.
 
     Returns:
-        A dictionary containing wins, losses, and points.
-        If the score file is missing, all values are zero.
-        Each line of the file has the format name,number.
+        A dictionary containing integer values for wins, losses,
+        and points. Each line in scores.txt has the format
+        name,number. The file is guaranteed to be correctly formatted.
+        If the file does not exist, all three values are zero.
     """
+
     dScores: dict[str, int] = {"wins": 0, "losses": 0, "points": 0}
 
     try:
@@ -258,7 +283,7 @@ def load_scores() -> dict[str, int]:
                     if sName in dScores:
                         dScores[sName] = int(lParts[1].strip())
     except FileNotFoundError:
-        pass
+        pass # dScores already initialized
 
     return dScores
 
@@ -268,11 +293,15 @@ def save_scores(dScores: dict[str, int]) -> None:
     """Write cumulative scores to scores.txt.
 
     Args:
-        dScores (dict[str, int]): wins, losses, and points
+        dScores (dict[str, int]): A dictionary containing integer
+            values for wins, losses, and points. Not modified.
 
     Returns:
-        None.
+        None. Creates scores.txt if it does not exist, or
+        overwrites its contents if it already exists.
+        Each line has the format name,number.
     """
+
     with open(SCORES_FILE, "w", encoding="utf-8") as oFile:
         for sName in dScores:
             oFile.write(sName + "," + str(dScores[sName]) + "\n")
@@ -281,18 +310,29 @@ def save_scores(dScores: dict[str, int]) -> None:
 # 14. new_round
 def new_round(dCategories: dict[str, list[str]],
               sCategory: str, sDifficulty: str) -> dict:
-    """Create the state for a new round.
+    """Create and initialize the state for a new Hangman round.
 
     Args:
-        dCategories (dict[str, list[str]]): all category word lists
-        sCategory (str): the selected category
-        sDifficulty (str): EASY, MEDIUM, or HARD
+        dCategories (dict[str, list[str]]): Dictionary mapping uppercase
+            category names to lists of uppercase words. Not modified.
+        sCategory (str): The selected uppercase category name.
+        sDifficulty (str): The difficulty level: EASY, MEDIUM, or HARD.
 
     Returns:
-        A dictionary with word, guesses, finished, message,
-        category, and difficulty. Raises ValueError if no words
-        match the selected category and difficulty.
+        A dictionary containing six keys:
+            "word": A randomly selected word matching the category
+                and difficulty.
+            "guesses": An empty list.
+            "finished": False.
+            "message": The string "Choose a letter!"
+            "category": The selected category.
+            "difficulty": The selected difficulty.
+
+    Raises:
+        ValueError: If no words match the selected category
+            and difficulty.
     """
+
     lWords: list[str] = select_category(dCategories, sCategory)
     lWords = get_words_by_difficulty(lWords, sDifficulty)
 
