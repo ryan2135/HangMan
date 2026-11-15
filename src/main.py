@@ -1,15 +1,25 @@
-################################################################################
-# File name:    main.py
-# Author:       YOUR NAME HERE
-# Date:         5/14/2025
-# Class:        CS 170
-# Assignment:   01Lab
-# Purpose:      Demonstrate Codespaces & Python
-# Hours:        1.5
-################################################################################
+import os
+from pathlib import Path
 
-from datetime import date
 
-print('Hello world!')
+def main() -> None:
+    os.chdir(Path(__file__).resolve().parent)
 
-print('Today is', date.today())
+    print("HANGMAN")
+    print("1. Text version")
+    print("2. Graphical version")
+
+    sChoice: str = input("Choose an option: ")
+
+    if sChoice == "1":
+        from hangman_text import main as text_main
+        text_main()
+    elif sChoice == "2":
+        from hangman_graphics import main as graphics_main
+        graphics_main()
+    else:
+        print("Invalid option.")
+
+
+if __name__ == "__main__":
+    main()
