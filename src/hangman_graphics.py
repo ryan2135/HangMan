@@ -284,12 +284,16 @@ def draw_game(
     rounded(surface, WHITE, pygame.Rect(18, 603, 395, 65), 15)
     draw_text(
         surface,
-        f"Wins: {scores['wins']}   Losses: {scores['losses']}   Points: {scores['points']}",
+        (
+            f"Wins: {scores['wins']}   "
+            f"Losses: {scores['losses']}   "
+            f"Points: {scores['points']}"
+        ),
         18,
         NAVY,
         (215, 637),
         True,
-    )
+)
     draw_text(
         surface, "Click letters or use your keyboard", 16, NAVY, (705, 670)
     )
